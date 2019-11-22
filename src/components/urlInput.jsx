@@ -7,11 +7,24 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 
+const LSKEY = "FFsURLsLStoragr"; //local storage key
+
 class UrlShortenner extends Component {
   state = {
     url: "",
-    shortenedUrl: ""
+    shortenedUrl: "",
+    savedUrls: [] //local storage date (array of JSon {urlShortenned: "tiynUrl", url : "url"})
   };
+
+  componentDidMount() {
+    const savedValues = localStorage.getItem(LSKEY);
+    if (savedValues === null) {
+      console.log("componentDidMount: there are no Urls saved!");
+    } else {
+      console.log("componentDidMount:", JSON.stringify(savedValues));
+      this.setState({ savedUrls: savedValues });
+    }
+  }
 
   handleTextChange = evt => {
     this.setState({ url: evt.target.value });
@@ -19,23 +32,48 @@ class UrlShortenner extends Component {
 
   handleSubmit = () => {
     if (this.state.url !== "") {
+      const newShort = this.doTheShortThing(this.state.url);
       this.setState({
-        shortenedUrl: this.doTheShortThing(this.state.url),
+        shortenedUrl: newShort,
         show: !this.state.show
       });
     } else {
       this.setState({ show: false });
     }
 
-    console.log(this.state.shortenedUrl);
+    this.addToLocalStorage();
   };
+
+  addToLocalStorage() {
+    //get current items
+    let savedValue = localStorage.getItem(LSKEY);
+    console.log("Saved value", JSON.stringify(savedValue));
+
+    console.log("NEW short value:", this.state.shortenedUrl);
+    console.log("NEW url value:", this.state.url);
+
+    //add the new one
+    const newValue = [
+      { shortenedUrl: this.state.shortenedUrl, url: this.state.url }
+    ];
+    if (savedValue === null) {
+      savedValue = newValue;
+    } else {
+      savedValue.concat(newValue);
+    }
+    this.setState({ savedUrls: savedValue });
+
+    //save it
+    localStorage.setItem(LSKEY, savedValue);
+    console.log("New stored values", JSON.stringify(savedValue));
+  }
 
   doTheShortThing(url) {
     //UrlMap.
-    let urlkey = Math.random()
+    const urlkey = Math.random()
+
       .toString(36)
       .substr(2, 5);
-
     return urlkey;
   }
 
@@ -67,13 +105,19 @@ class UrlShortenner extends Component {
           >
             Submit
           </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="small"
+            onClick={this.handleReset}
+          >
+            Reset
+          </Button>
         </CardActions>
         {this.state.show && this.state.shortenedUrl !== "" && (
           <CardContent>
             <Typography variant="body2" component="p">
-              <p>
-                <label>{this.state.url}</label>
-              </p>
+              <label>{this.state.url}</label>
               Shortened to URL:&nbsp;
               <a href={this.state.url} target="_blanc">
                 {this.state.shortenedUrl}
