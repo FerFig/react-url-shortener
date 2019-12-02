@@ -6,8 +6,10 @@ import CardContent from "@material-ui/core/CardContent";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
+import LocalDatabase from "../api/Data";
+import { ValidURL } from "../api/Utils";
 
-const LSKEY = "FFsURLsStorage"; //local storage key
+let UrlsDB = new LocalDatabase();
 
 class UrlShortenner extends Component {
   state = {
@@ -18,38 +20,22 @@ class UrlShortenner extends Component {
   };
 
   componentDidMount() {
-    if (localStorage.getItem(LSKEY) === null) {
-      console.log("componentDidMount: there are no Urls saved!");
-    } else {
-      let savedValues = JSON.parse(localStorage.getItem(LSKEY));
+    let savedValues = UrlsDB.getAllUrl();
+
+    if (savedValues) {
       console.log("componentDidMount:", JSON.stringify(savedValues));
+
       this.setState({ savedUrls: savedValues });
+    } else {
+      console.log("componentDidMount: there are no Urls saved!");
     }
   }
 
-  addToLocalStorage(shortKey) {
-    //get current items
-    let savedValue = localStorage.getItem(LSKEY);
-
-    //add the new one
-    const newValue = [
-      {
-        shortUrl: shortKey,
-        url: this.state.url
-      }
-    ];
-
-    if (savedValue === null) {
-      savedValue = newValue; //JSON object
-    } else {
-      let storedData = JSON.parse(savedValue);
-      savedValue = storedData.concat(newValue);
-    }
-
-    //save it in local storage...
-    localStorage.setItem(LSKEY, JSON.stringify(savedValue));
+  addToLocalStorage(shortKey, url) {
+    UrlsDB.addUrlToStorage(shortKey, url);
+    let savedValues = UrlsDB.getAllUrl();
     //... and to current state
-    this.setState({ savedUrls: savedValue });
+    this.setState({ savedUrls: savedValues });
   }
 
   handleTextChange = evt => {
@@ -58,16 +44,27 @@ class UrlShortenner extends Component {
 
   handleSubmit = () => {
     if (this.state.url !== "") {
-      const shortKey = Math.random()
-        .toString(36)
-        .substr(2, 5);
+      let validURL = this.state.url;
+      if (!ValidURL(validURL)) {
+        alert("Not a valid URL!");
+        return;
+      }
+
+      if (UrlsDB.existsUrl(this.state.url)) {
+        alert("This URL is already stored!");
+        return;
+      }
+
+      const shortKey = UrlsDB.getNewShortID();
 
       this.setState({
         shortUrl: shortKey,
         show: true
       });
 
-      this.addToLocalStorage(shortKey);
+      this.addToLocalStorage(shortKey, validURL);
+
+      //this.handleReset();
     } else {
       this.setState({ show: false });
     }
