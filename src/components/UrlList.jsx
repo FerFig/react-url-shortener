@@ -16,7 +16,7 @@ class UrlList extends React.Component {
   }
 
   render() {
-    return <TableRender title="Stored URLs" data={this.state.savedUrls} />;
+    return <TableRender data={this.state.savedUrls} />;
   }
 }
 

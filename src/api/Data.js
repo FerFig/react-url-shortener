@@ -14,11 +14,14 @@ class API {
   };
 
   //** Add new item to storage */
-  addUrlToStorage = (shortKey, url) => {
+  addUrlToStorage = (shortUrl, url) => {
+    //case short id is not provided
+    shortUrl = shortUrl ? shortUrl : this.getNewShortID();
+
     //build the new item
     const newValue = [
       {
-        shortUrl: shortKey,
+        shortUrl: shortUrl,
         url: url
       }
     ];
@@ -60,6 +63,26 @@ class API {
     return false;
   };
 
+  //** Update item in storage */
+  updateUrl = updatedValue => {
+    //get all existing items
+    const savedValues = this.getAllUrl();
+
+    let newValuesToStore = [];
+    //update the value in the collection
+    for (var i = 0; i < savedValues.length; i++) {
+      var item = savedValues[i];
+      if (item.shortUrl === updatedValue.shortUrl) {
+        newValuesToStore = newValuesToStore.concat(updatedValue);
+      } else {
+        newValuesToStore = newValuesToStore.concat(item);
+      }
+    }
+
+    //save it in local storage...
+    localStorage.setItem(LSKEY, JSON.stringify(newValuesToStore));
+  };
+
   //** Remove item from storage */
   removeUrlFromStorage = shortUrl => {
     //get all existing items
@@ -92,7 +115,7 @@ class API {
       }
     }
 
-    return {};
+    return undefined;
   };
 
   /** Check if url is already stored */
@@ -122,7 +145,7 @@ class API {
       }
     }
 
-    return {};
+    return undefined;
   };
 
   //** Get items by searching for a value in any field, otherwise empty */

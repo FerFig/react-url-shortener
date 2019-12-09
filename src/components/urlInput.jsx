@@ -8,6 +8,8 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import LocalDatabase from "../api/Data";
 import { ValidURL } from "../api/Utils";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 let UrlsDB = new LocalDatabase();
 
@@ -46,12 +48,14 @@ class UrlShortenner extends Component {
     if (this.state.url !== "") {
       let validURL = this.state.url;
       if (!ValidURL(validURL)) {
-        alert("Not a valid URL!");
+        //alert("Not a valid URL!");
+        toast("Not a valid URL!");
+
         return;
       }
 
       if (UrlsDB.existsUrl(this.state.url)) {
-        alert("This URL is already stored!");
+        toast("This URL is already stored!");
         return;
       }
 
@@ -116,6 +120,11 @@ class UrlShortenner extends Component {
             Reset
           </Button>
         </CardActions>
+        <CardContent>
+          <Typography>
+            <ToastContainer />
+          </Typography>
+        </CardContent>
         {this.state.show && this.state.shortUrl !== "" && (
           <CardContent>
             <Typography variant="body2" component="p">

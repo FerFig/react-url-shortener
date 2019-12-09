@@ -10,14 +10,12 @@ import {
 
 import LocalDatabase from "../api/Data";
 
-function openInNewTab(url) {
-  debugger;
-
-  const win = window.open(url, "_blank");
-  //const win = (window.location.href = url);
-  if (win != null) {
-    win.focus();
+function openTheURL(url) {
+  if (!(url.includes("http://") || url.includes("https://"))) {
+    url = "http://".concat(url);
   }
+
+  window.location.assign(url);
 }
 
 const OpenUrl = ({ match, location, history }) => {
@@ -33,25 +31,23 @@ const OpenUrl = ({ match, location, history }) => {
     urlItem = UrlsDB.getItemFromShort(tinyUrl);
 
     if (urlItem) {
-      //openInNewTab(urlItem.url);
+      openTheURL(urlItem.url);
       //history.push(urlItem.url);
     }
   }
 
-  return (
+  return urlItem ? (
     <Router>
       <div>
         <h2>« Página de redireccionamento!! »</h2>
         <h3>{urlItem ? urlItem.url : "NotFound"} </h3>
         <Route>
-          {urlItem ? (
-            <Redirect to={urlItem.url} from={location.pathname} />
-          ) : (
-            <Route component={NotFound404} />
-          )}
+          <Redirect to={urlItem.url} from={location.pathname} />
         </Route>
       </div>
     </Router>
+  ) : (
+    <NotFound404></NotFound404>
   );
 };
 

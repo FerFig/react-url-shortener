@@ -16,12 +16,14 @@ a.activeNavLink {
   font-size: 18px;
   list-style-type: none;
   color: #0000ff;
+  text-shadow: 2px 2px 4px black;
 }
 
 a.navLink {
   font-size: 18px;
   list-style-type: none;
   color: #ffffff;
+  text-shadow: 2px 2px 2px black;
 }
 
 a,
@@ -79,6 +81,7 @@ li.nav {
   font-size: 40px;
   display: inline-block;
   margin-left: 80px;
+  text-shadow: 6px 6px 10px black;
 }
 
 .tableTitlePadding {
