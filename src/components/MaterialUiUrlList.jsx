@@ -28,41 +28,35 @@ export default function UrlListMaterialUiTable() {
         editable={{
           onRowAdd: newData =>
             new Promise(resolve => {
-              setTimeout(() => {
-                resolve();
-                setState(prevState => {
-                  const data = [...prevState.data];
-                  data.push(newData);
-                  UrlsDB.addUrlToStorage(newData.shortUrl, newData.url);
-                  return { ...prevState, data };
-                });
-              }, 600);
+              resolve();
+              setState(prevState => {
+                const data = [...prevState.data];
+                data.push(newData);
+                UrlsDB.addUrlToStorage(newData.shortUrl, newData.url);
+                return { ...prevState, data };
+              });
             }),
           onRowUpdate: (newData, oldData) =>
             new Promise(resolve => {
-              setTimeout(() => {
-                resolve();
-                if (oldData) {
-                  setState(prevState => {
-                    const data = [...prevState.data];
-                    data[data.indexOf(oldData)] = newData;
-                    UrlsDB.updateUrl(newData);
-                    return { ...prevState, data };
-                  });
-                }
-              }, 600);
+              resolve();
+              if (oldData) {
+                setState(prevState => {
+                  const data = [...prevState.data];
+                  data[data.indexOf(oldData)] = newData;
+                  UrlsDB.updateUrl(newData);
+                  return { ...prevState, data };
+                });
+              }
             }),
           onRowDelete: oldData =>
             new Promise(resolve => {
-              setTimeout(() => {
-                resolve();
-                setState(prevState => {
-                  const data = [...prevState.data];
-                  data.splice(data.indexOf(oldData), 1);
-                  UrlsDB.saveAll(data);
-                  return { ...prevState, data };
-                });
-              }, 600);
+              resolve();
+              setState(prevState => {
+                const data = [...prevState.data];
+                data.splice(data.indexOf(oldData), 1);
+                UrlsDB.saveAll(data);
+                return { ...prevState, data };
+              });
             })
         }}
       />
